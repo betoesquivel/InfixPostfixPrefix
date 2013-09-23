@@ -31,14 +31,14 @@ bool is_number(char x)
 stack<char> infix_to_postfix(string exp, int &x)
 {
 	stack<char> postfix;
-	for(int i = 0; i<exp.length(); i++)
+	int size = exp.length();
+	for(int i = 0; i<size; i++)
 	{
 		if(is_number(exp[i]))
 		{
-			cout<<exp[i]<<endl;
 			postfix.push(exp[i]);				
-			exp.erase(exp.begin()+(i+1));
-			
+			exp.erase(i,1);
+			size--;
 		}
 	}
 	for(int i = 0; i<exp.length(); i++)
@@ -52,11 +52,12 @@ stack<char> infix_to_postfix(string exp, int &x)
 int main()
 {
 	string inputFileName;
-	string expression = "2+4";
+	string expression = "2+4-8*3";
 	int x; 
 	stack<char> my_postfix;
 	my_postfix = infix_to_postfix(expression, x);
 	x = my_postfix.size();
+	cout<<x<<" Este es el tamanio del stack regresado."<<endl;
 	for(int i = 0; i<x; i++){
 		cout<<my_postfix.top();
 		my_postfix.pop();
