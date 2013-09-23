@@ -37,8 +37,8 @@ stack<char> infix_to_postfix(string exp, int &x)
 		{
 			cout<<exp[i]<<endl;
 			postfix.push(exp[i]);				
-			exp.erase(exp[i]);
-			i--;
+			exp.erase(exp.begin()+(i+1));
+			
 		}
 	}
 	for(int i = 0; i<exp.length(); i++)
