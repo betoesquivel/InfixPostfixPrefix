@@ -108,15 +108,98 @@ string infix_to_postfix(string exp)
 		postfixString += postfixStack.top();
 		postfixStack.pop();
 	}
+	if(debug) cout<<"DEBUG::Postfix conversion finished, "<<postfixString<<endl;
 	return postfixString; 
 }
+
+string infix_to_prefix(string exp)
+{
+	string prefixString = "";
+	stack<char> prefixStack;
+	int prec1 = 0, prec2 = 0;
+	char c;
+	for(int i = exp.length()-1; i>0; i--)
+	{
+		c = exp[i];	
+
+		if(debug)
+			cout<<"DEBUG::Starting with char... "<<c<<endl;
+		switch(c)
+		{
+			case ')': prefixStack.push(c);
+				if(debug)
+					cout<<"DEBUG:: Found (, pushed to stack... "<<prefixStack.top()<<endl;
+				break;
+			case '(': 
+				  while(prefixStack.top()!=')')
+				  {
+					prefixString += prefixStack.top();
+					prefixStack.pop();
+				  }
+				  prefixStack.pop();
+				if(debug)
+				{
+					cout<<"DEBUG:: Found (, popped to final string... "<<prefixStack.top()<<endl;
+					cout<<prefixString<<endl;
+				}
+				break;
+			default:
+				//The character read is an operand or an operator
+				if(is_number(c))
+				{
+					if(debug) cout<<"DEBUG:: found an operand. Concatenating it."<<endl;
+					//Concatenate to the return string.
+					prefixString+=c;
+					if(debug) cout<<"DEBUG:: Concatenated the operand."<<endl;
+				}
+				else
+				{
+					//the character read is an operator
+					
+					if(debug) cout<<"DEBUG:: found a operator. Checking size..."<<endl;
+					if(prefixStack.size()==0)
+					{
+						if(debug) cout<<"DEBUG:: found a operator. Size is 0, pushing..."<<endl;
+						prefixStack.push(c);
+					}
+					else
+					{
+						prec1 = precedence[find_in_array(operators, 10, c)];
+						prec2 = precedence[find_in_array(operators, 10, prefixStack.top())];
+						if(debug) cout<<"DEBUG:: Precedence of operator: "<<prec1<<' '<<prec2<<endl;
+						while(prefixStack.size()>0 && prec1<=prec2)
+						{
+							prefixString+=prefixStack.top();
+							prefixStack.pop();
+							prec2 = (prefixStack.size()>0) ? precedence[find_in_array(operators, 10, prefixStack.top())]:-1;
+						}	
+						prefixStack.push(c);
+					}
+
+				}
+				break;
+				
+		}//End of switch block...
+	}//End of for loop
+	while(prefixStack.size()>0)
+	{
+		prefixString += prefixStack.top();
+		prefixStack.pop();
+	}
+	if(debug) cout<<"DEBUG::Postfix conversion finished, "<<prefixString<<endl;
+	
+	return prefixString;
+}	
 
 int main()
 {
 	string inputFileName;
-	string expression = "1/(4+2)-3";
+	//string expression = "1/(4+2)-3";
 	//string expression = "4+5*6";
-	string my_postfix;
+	string expression = "(5-6)*7";
+	string my_postfix, my_prefix;
 	my_postfix = infix_to_postfix(expression);
-	cout<<"Esta es la expresión convertida: "<<my_postfix<<endl;
+	my_prefix = infix_to_prefix(expression);
+	cout<<"Esta es la expresión convertida a postfix: "<<my_postfix<<endl;
+	cout<<"Esta es la expresión convertida a prefix: "<<my_prefix<<endl;
 }
