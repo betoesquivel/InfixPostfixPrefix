@@ -6,7 +6,7 @@
 
 using namespace std; 
 
-bool debug = true;
+bool debug = false;
 
 const char arithmeticOperators[5] = {'+','-','*','/','%'};
 const char relationalOperators[3] = {'<','>','='};
@@ -112,7 +112,7 @@ queue<char> infix_to_prefix(string exp)
 	char c;
 	for(int i = (size-1); i>=0; i--)
 	{
-		if(debug) cout<<"DEBUG::String evaluated is... "<<i<<endl;
+		if(debug) cout<<"DEBUG::String char evaluated is... "<<i<<endl;
 		c = exp.c_str()[i];	
 		if(debug) cout<<"DEBUG::Evaluating char... "<<c<<endl;
 		switch(c)
@@ -122,13 +122,13 @@ queue<char> infix_to_prefix(string exp)
 					cout<<"DEBUG:: Found (, pushed to stack... "<<prefixOperatorStack.top()<<endl;
 				break;
 			case '(': 
-				  while(prefixOperatorStack.size()>0 && prefixOperatorStack.top()!='(')
+				  while(prefixOperatorStack.size()>0 && prefixOperatorStack.top()!=')')
 				  {
-					if(debug)
-						cout<<"DEBUG:: Concatenating: "<<prefixOperatorStack.top()<<endl;
+					if(debug) cout<<"DEBUG:: Concatenating: "<<prefixOperatorStack.top()<<endl;
 					prefixPreStack.push(prefixOperatorStack.top());
 					prefixOperatorStack.pop();
 				  }
+				  if(debug) cout<<"DEBUG:: Popping ), right?: "<<prefixOperatorStack.top()<<endl;
 				  prefixOperatorStack.pop();
 				 if(debug)
 				 {
@@ -145,6 +145,7 @@ queue<char> infix_to_prefix(string exp)
 				else
 				{
 					if(debug) cout<<"DEBUG:: found an operator. Checking size."<<endl;
+					if(debug) cout<<"PrefixOperatorStack Size is: "<<prefixOperatorStack.size()<<endl;
 					if(prefixOperatorStack.size()==0)
 					{
 						prefixOperatorStack.push(c);
@@ -169,19 +170,22 @@ queue<char> infix_to_prefix(string exp)
 				
 		}//End of switch block...
 		if(debug) cout<<"DEBUG:: End of switch block for "<<c<<endl;
+		if(debug) cout<<"PrefixOperatorStack Size is: "<<prefixOperatorStack.size()<<endl;
 	}//End of for loop
 	if(debug) cout<<"DEBUG:: End of for loop."<<endl;
-	while(prefixOperatorStack.size()>0)
+	if(debug) cout<<"PrefixOperatorStack Size is: "<<prefixOperatorStack.size()<<endl;
+	while(!prefixOperatorStack.empty())
 	{
 		prefixPreStack.push(prefixOperatorStack.top());
 		if(debug) cout<<"DEBUG:: Adding rest of operators in stack to prestack "<<prefixOperatorStack.top()<<"."<<endl;
 		prefixOperatorStack.pop();
 	}
 	if(debug) cout<<"DEBUG:: End of first while loop."<<endl;
-	while(prefixPreStack.size()>0)
+	if(debug) cout<<"PrefixPreStack Size is: "<<prefixPreStack.size()<<endl;
+	while(!prefixPreStack.empty())
 	{
 		prefixQueue.push(prefixPreStack.top());
-		if(debug) cout<<"DEBUG:: Passing "<<prefixOperatorStack.top()<<" in prestack, to the queue."<<endl;
+		if(debug) cout<<"DEBUG:: Passing "<<prefixPreStack.top()<<" in prestack, to the queue."<<endl;
 		prefixPreStack.pop();
 	}
 	if(debug) cout<<"DEBUG::Prefix conversion finished, "<<endl;
@@ -190,27 +194,40 @@ queue<char> infix_to_prefix(string exp)
 
 int main()
 {
-	string inputFileName;
+	string inputFileName, expression;
 	//string expression = "1/(4+2)-3";
 	//string expression = "4+5*6";
 	//string expression = "2*3-4/5";
-	string expression = "(5-6)*7";
+	//string expression = "(5-6)*7";
 	//string expression = "3+4";
+	//string expression = "7*5+9";
 	queue<char> my_postfix, my_prefix;
-	my_postfix = infix_to_postfix(expression);
-	my_prefix = infix_to_prefix(expression);
-	cout<<"Esta es la expresión convertida a postfix: "<<endl;
-	while(my_postfix.size()>0)
+
+	cout<<"Enter the name of the file where expressions are stored: (with .txt)"<<endl;
+	cin>>inputFileName;
+	cin.ignore();
+
+	ifstream inputFile;
+	inputFile.open(inputFileName.c_str());
+	while(!inputFile.eof())
 	{
-		cout<<my_postfix.front()<<' ';
-		my_postfix.pop();
+		getline(inputFile,expression);
+		my_postfix = infix_to_postfix(expression);
+		my_prefix = infix_to_prefix(expression);
+		cout<<"Esta es la expresión convertida a postfix: "<<endl;
+		while(my_postfix.size()>0)
+		{
+			cout<<my_postfix.front()<<' ';
+			my_postfix.pop();
+		}
+		cout<<endl;
+		cout<<"Esta es la expresión convertida a prefix: "<<endl;
+		while(my_prefix.size()>0)
+		{
+			cout<<my_prefix.front()<<' ';
+			my_prefix.pop();
+		}
+		cout<<endl;
 	}
-	cout<<endl;
-	cout<<"Esta es la expresión convertida a prefix: "<<endl;
-	while(my_prefix.size()>0)
-	{
-		cout<<my_prefix.front()<<' ';
-		my_prefix.pop();
-	}
-	cout<<endl;
+	inputFile.close();
 }
