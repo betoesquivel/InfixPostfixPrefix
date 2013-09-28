@@ -283,26 +283,32 @@ int main()
 	while(!inputFile.eof())
 	{
 		getline(inputFile,expression);
-		my_postfix = infix_to_postfix(expression);
-		my_prefix = infix_to_prefix(expression);
-		cout<<"Esta es la expresión convertida a postfix: "<<endl;
-		evaluate_postfix(my_postfix,answer);
-		while(my_postfix.size()>0)
+		if(expression.c_str()[0]!=NULL)
 		{
-			cout<<my_postfix.front()<<' ';
-			my_postfix.pop();
-		}
-		cout<<endl;
-		cout<<"Este es el resultado: "<<answer<<endl;
+			my_postfix = infix_to_postfix(expression);
+			my_prefix = infix_to_prefix(expression);
+			cout<<"Esta es la expresión convertida a postfix: "<<endl;
+			evaluate_postfix(my_postfix,answer);
+			while(my_postfix.size()>0)
+			{
+				cout<<my_postfix.front()<<' ';
+				my_postfix.pop();
+			}
+			cout<<endl;
+			cout<<"Este es el resultado: "<<answer<<endl;
 
-		cout<<"Esta es la expresión convertida a prefix: "<<endl;
-		while(my_prefix.size()>0)
+			cout<<"Esta es la expresión convertida a prefix: "<<endl;
+			while(my_prefix.size()>0)
+			{
+				cout<<my_prefix.front()<<' ';
+				my_prefix.pop();
+			}
+			cout<<endl;
+			cout<<endl;
+		}else
 		{
-			cout<<my_prefix.front()<<' ';
-			my_prefix.pop();
+			if (debug) cout<<"DEBUG::The file had a blank line."<<endl;
 		}
-		cout<<endl;
-		cout<<endl;
 	}
 	inputFile.close();
 }
