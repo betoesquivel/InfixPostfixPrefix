@@ -84,8 +84,7 @@ queue<char> infix_to_postfix(string exp)
 						{
 							postfixQueue.push(postfixStack.top());
 							postfixStack.pop();
-							nextOperatorInStackPrecedence = (postfixStack.size()>0) ? get_precedence(postfixStack.top()):-1;
-							if(debug) cout<<"DEBUG:: Precedence of operator is "<<nextOperatorInStackPrecedence<<endl;
+							nextOperatorInStackPrecedence = get_precedence(postfixStack.top());
 						}
 						postfixStack.push(c);
 					}
@@ -112,9 +111,9 @@ queue<char> infix_to_prefix(string exp)
 	char c;
 	for(int i = (size-1); i>=0; i--)
 	{
-		if(debug) cout<<"DEBUG::String evaluated is... "<<i<<endl;
 		c = exp.c_str()[i];	
-		if(debug) cout<<"DEBUG::Evaluating char... "<<c<<endl;
+		if(debug)
+			cout<<"DEBUG::Evaluating char... "<<c<<endl;
 		switch(c)
 		{
 			case ')': prefixOperatorStack.push(c);
@@ -154,13 +153,11 @@ queue<char> infix_to_prefix(string exp)
 					{
 						operatorPrecedence = get_precedence(c);
 						nextOperatorInStackPrecedence = get_precedence(prefixOperatorStack.top());
-						if(debug) cout<<"DEBUG:: Stack is not empty, checking precedence of operators."<<endl;
-						while(prefixOperatorStack.size()>0  && operatorPrecedence<=nextOperatorInStackPrecedence)
+						while(prefixOperatorStack.size()>0 && c!='(' && operatorPrecedence<=nextOperatorInStackPrecedence)
 						{
 							prefixPreStack.push(prefixOperatorStack.top());
-							if(debug) cout<<"DEBUG:: Pushing operator in stack "<<prefixOperatorStack.top()<<" to prefix prestack."<<endl;
 							prefixOperatorStack.pop();
-							nextOperatorInStackPrecedence = (prefixOperatorStack.size()>0) ? get_precedence(prefixOperatorStack.top()):-1;
+							nextOperatorInStackPrecedence = get_precedence(prefixOperatorStack.top());
 						}
 						prefixOperatorStack.push(c);
 					}
@@ -168,23 +165,18 @@ queue<char> infix_to_prefix(string exp)
 				break;
 				
 		}//End of switch block...
-		if(debug) cout<<"DEBUG:: End of switch block for "<<c<<endl;
 	}//End of for loop
-	if(debug) cout<<"DEBUG:: End of for loop."<<endl;
 	while(prefixOperatorStack.size()>0)
 	{
 		prefixPreStack.push(prefixOperatorStack.top());
-		if(debug) cout<<"DEBUG:: Adding rest of operators in stack to prestack "<<prefixOperatorStack.top()<<"."<<endl;
 		prefixOperatorStack.pop();
 	}
-	if(debug) cout<<"DEBUG:: End of first while loop."<<endl;
 	while(prefixPreStack.size()>0)
 	{
 		prefixQueue.push(prefixPreStack.top());
-		if(debug) cout<<"DEBUG:: Passing "<<prefixOperatorStack.top()<<" in prestack, to the queue."<<endl;
 		prefixPreStack.pop();
 	}
-	if(debug) cout<<"DEBUG::Prefix conversion finished, "<<endl;
+	if(debug) cout<<"DEBUG::Postfix conversion finished, "<<endl;
 	return prefixQueue; 
 }	
 
@@ -193,8 +185,8 @@ int main()
 	string inputFileName;
 	//string expression = "1/(4+2)-3";
 	//string expression = "4+5*6";
-	//string expression = "2*3-4/5";
-	string expression = "(5-6)*7";
+	string expression = "2*3-4/5";
+	//string expression = "(5-6)*7";
 	//string expression = "3+4";
 	queue<char> my_postfix, my_prefix;
 	my_postfix = infix_to_postfix(expression);
