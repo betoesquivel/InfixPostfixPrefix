@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <stack>
-#include <queue>
 
 
 using namespace std; 
@@ -34,10 +33,10 @@ bool is_number(char x)
 		x=='5'||x=='6'||x=='7'||x=='8'||x=='9');
 }
 
-queue<char> infix_to_postfix(string exp)
+string infix_to_postfix(string exp)
 {
 	stack<char> postfixStack;
-	queue<char> postfixQueue;
+	string postfixString = "";
 	int size = exp.length(), operatorPrecedence = 0, nextOperatorInStackPrecedence = 0, opIndex;
 	char c;
 	for(int i = 0; i<size; i++)
@@ -56,37 +55,33 @@ queue<char> infix_to_postfix(string exp)
 				  {
 					if(debug)
 						cout<<"DEBUG:: Concatenating: "<<postfixStack.top()<<endl;
-					postfixQueue.push(postfixStack.top());
+					postfixString += postfixStack.top();
 					postfixStack.pop();
 				  }
 				  postfixStack.pop();
 				 if(debug)
 				 {
 				 	cout<<"DEBUG:: Found (, popped to final string... "<<endl;
+				 	cout<<postfixString<<endl;
 				 }
 				break;
 			default:
 				if(is_number(c))
 				{
 					if(debug) cout<<"DEBUG:: found an operand. Concatenating it."<<endl;
-					postfixQueue.push(c);
+					postfixString+=c;
 					if(debug) cout<<"DEBUG:: Concatenated the operand."<<endl;
 				}
 				else
 				{
-					if(postfixStack.size()==0)
-						postfixStack.push(c);
-					else
+					operatorPrecedence = get_precedence(c);
+					nextOperatorInStackPrecedence = get_precedence(postfixStack.top());
+					while(postfixStack.size()>0 && c!='(' && operatorPrecedence<=nextOperatorInStackPrecedence)
 					{
-						operatorPrecedence = get_precedence(c);
-						nextOperatorInStackPrecedence = get_precedence(postfixStack.top());
-						while(postfixStack.size()>0 && c!='(' && operatorPrecedence<=nextOperatorInStackPrecedence)
-						{
-							postfixQueue.push(postfixStack.top());
-							postfixStack.pop();
-						}
-						postfixStack.push(c);
+						postfixString+=postfixStack.top();
+						postfixStack.pop();
 					}
+					postfixStack.push(c);
 				}
 				break;
 				
@@ -94,19 +89,19 @@ queue<char> infix_to_postfix(string exp)
 	}//End of for loop
 	while(postfixStack.size()>0)
 	{
-		postfixQueue.push(postfixStack.top());
+		postfixString += postfixStack.top();
 		postfixStack.pop();
 	}
-	if(debug) cout<<"DEBUG::Postfix conversion finished, "<<endl;
-	return postfixQueue; 
+	if(debug) cout<<"DEBUG::Postfix conversion finished, "<<postfixString<<endl;
+	return postfixString; 
 }
 
-queue<char> infix_to_prefix(string exp)
+string infix_to_prefix(string exp)
 {
+	string prefixString = "";
 	stack<char> prefixStack;
-	queue<char> prefixQueue;
 	
-	return prefixQueue;
+	return prefixString;
 }	
 
 int main()
@@ -114,15 +109,10 @@ int main()
 	string inputFileName;
 	//string expression = "1/(4+2)-3";
 	//string expression = "4+5*6";
-	//string expression = "2*3-4/5";
-	string expression = "(5-6)*7";
-	queue<char> my_postfix, my_prefix;
+	string expression = "2*3-4/5";
+	//string expression = "(5-6)*7";
+	string my_postfix, my_prefix;
 	my_postfix = infix_to_postfix(expression);
-	cout<<"Esta es la expresión convertida a postfix: "<<endl;
-	while(my_postfix.size()>0)
-	{
-		cout<<my_postfix.front()<<' ';
-		my_postfix.pop();
-	}
-	cout<<endl;
+	cout<<"Esta es la expresión convertida a postfix: "<<my_postfix<<endl;
+	cout<<"Esta es la expresión convertida a prefix: "<<my_prefix<<endl;
 }
