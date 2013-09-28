@@ -2,6 +2,7 @@
 #include <fstream>
 #include <stack>
 #include <queue>
+#include <cstdlib>
 
 
 using namespace std; 
@@ -192,15 +193,85 @@ queue<char> infix_to_prefix(string exp)
 	return prefixQueue; 
 }	
 
+bool evaluate_postfix(queue<char> postfix, int &solution)
+{
+	stack<int> operandStack;
+	string temp = "";
+	char c;
+	int x, y;
+	while(!postfix.empty())
+	{
+		temp = "";
+		temp+=postfix.front();
+		postfix.pop();
+		c = temp.c_str()[0];
+		switch(c)
+		{
+			case '+':
+				x = operandStack.top(); operandStack.pop();
+				y = operandStack.top(); operandStack.pop();
+				operandStack.push(y+x);
+				break;
+			case '-':
+				x = operandStack.top(); operandStack.pop();
+				y = operandStack.top(); operandStack.pop();
+				operandStack.push(y-x);
+				break;
+			case '*':
+				x = operandStack.top(); operandStack.pop();
+				y = operandStack.top(); operandStack.pop();
+				operandStack.push(y*x);
+				break;
+			case '/':
+				x = operandStack.top(); operandStack.pop();
+				y = operandStack.top(); operandStack.pop();
+				operandStack.push(y/x);
+				break;
+			case '%':
+				x = operandStack.top(); operandStack.pop();
+				y = operandStack.top(); operandStack.pop();
+				operandStack.push(y%x);
+				break;
+			case '<':
+				x = operandStack.top(); operandStack.pop();
+				y = operandStack.top(); operandStack.pop();
+				operandStack.push(y<x);
+				break;
+			case '>':
+				x = operandStack.top(); operandStack.pop();
+				y = operandStack.top(); operandStack.pop();
+				operandStack.push(y>x);
+				break;
+			case '=':
+				x = operandStack.top(); operandStack.pop();
+				y = operandStack.top(); operandStack.pop();
+				operandStack.push(y==x);
+				break;
+			case '&':
+				x = operandStack.top(); operandStack.pop();
+				y = operandStack.top(); operandStack.pop();
+				operandStack.push(y&&x);
+				break;
+			case '|':
+				x = operandStack.top(); operandStack.pop();
+				y = operandStack.top(); operandStack.pop();
+				operandStack.push(y&&x);
+				break;
+			default:
+				x = atoi(temp.c_str());
+				if (debug) cout<<"DEBUG::This is the variable to push."<<endl;
+				operandStack.push(x);	
+				break;
+		}
+	}
+	solution = operandStack.top();	
+	return true;
+}//End of evaluate_postfix
+
 int main()
 {
+	int answer; 
 	string inputFileName, expression;
-	//string expression = "1/(4+2)-3";
-	//string expression = "4+5*6";
-	//string expression = "2*3-4/5";
-	//string expression = "(5-6)*7";
-	//string expression = "3+4";
-	//string expression = "7*5+9";
 	queue<char> my_postfix, my_prefix;
 
 	cout<<"Enter the name of the file where expressions are stored: (with .txt)"<<endl;
@@ -215,18 +286,22 @@ int main()
 		my_postfix = infix_to_postfix(expression);
 		my_prefix = infix_to_prefix(expression);
 		cout<<"Esta es la expresión convertida a postfix: "<<endl;
+		evaluate_postfix(my_postfix,answer);
 		while(my_postfix.size()>0)
 		{
 			cout<<my_postfix.front()<<' ';
 			my_postfix.pop();
 		}
 		cout<<endl;
+		cout<<"Este es el resultado: "<<answer<<endl;
+
 		cout<<"Esta es la expresión convertida a prefix: "<<endl;
 		while(my_prefix.size()>0)
 		{
 			cout<<my_prefix.front()<<' ';
 			my_prefix.pop();
 		}
+		cout<<endl;
 		cout<<endl;
 	}
 	inputFile.close();
