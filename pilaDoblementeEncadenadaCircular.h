@@ -1,13 +1,5 @@
-template <class T>
-class Node
-{
-	public:
-		T data;
-		Node<T> *next;
-		Node<T> *previous;
-		Node() { next=NULL; previous=NULL; }
-		Node(T param) { data = param; next=NULL; previous=NULL; }
-};
+bool debug_pila = true;
+
 template <class T>
 class stack
 {
@@ -20,8 +12,8 @@ class stack
 		void pop();
 		T top() { return stack_top->data; }
 		int size(){ return stack_size; }
-		bool empty(){ return (stack_top==NULL) }
-		stack() 
+		bool empty(){ return (stack_top==NULL); }
+		~stack() 
 		{ 
 			Node<T> *eraser;
 			while(stack_size>0)
@@ -46,6 +38,7 @@ void stack<T>::push(T param)
 		stack_top = newNode;
 		stack_top->previous = newNode;
 		stack_top->next = newNode;
+		if(debug_pila) cout<<"Size is 0. New node pointing to itself."<<endl;		
 	}else
 	{
 		Node<T> *aux = stack_top;	
@@ -62,10 +55,16 @@ void stack<T>::push(T param)
 template <class T>
 void stack<T>::pop()
 {
-	Node<T> eraser = stack_top;
-	stack_top = stack_top->next;	
-	delete eraser;
-	if(stack_size == 1) stack_top = NULL;
-	size-=1;
+	if(stack_size==0)
+	{
+		if(debug_pila) cout<<"Stack size is 0. Popping nothing."<<endl;		
+	}else
+	{
+		Node<T> *eraser = stack_top;
+		stack_top = stack_top->next;	
+		delete eraser;
+	}
+		stack_size-=1;
+		if(stack_size == 0) stack_top = NULL;
 }
 

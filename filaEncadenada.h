@@ -1,22 +1,12 @@
 template <class T>
-class Node
-{
-	public:
-		T data;
-		Node<T> *next;
-		Node(){ next = NULL; }
-		Node(T param){ data = param; next = NULL; 
-};
-
-template <class T>
 class queue
 {
 	private:
-		Node<T> *front;
-		Node<T> *back;
-		int size;
+		Node<T> *queue_front;
+		Node<T> *queue_back;
+		int queue_size;
 	public:
-		queue() { front = NULL; back = NULL; size = 0; }
+		queue() { queue_front = NULL; queue_back = NULL; queue_size = 0; }
 		void pop();
 		void push(T param);
 		T front();
@@ -24,44 +14,51 @@ class queue
 		bool empty();
 		~queue()
 		{
-			Node<T> *aux = front;
+			Node<T> *aux = queue_front;
 			while(aux != NULL)
 			{
-				front = aux->next;
+				queue_front = aux->next;
 				delete aux;
-				aux = front;	
+				aux = queue_front;	
 			}
 		}
 };
 template <class T>
 void queue<T>::pop()
 {
-	Nodo<T> *aux = front;
-	front = front->next; 
+	Node<T> *aux = queue_front;
+	queue_front = queue_front->next; 
 	delete aux;
-	size-=1;
+	queue_size-=1;
 }
 template <class T>
 void queue<T>::push(T param)
 {
 	Node<T> *newNode = new Node<T>(param);
-	back->next = newNode; 
-	back = newNode;
-	size+=1;
+	if(queue_size==0)
+	{
+		queue_front = newNode;
+		queue_back = newNode;
+	}else
+	{
+		queue_back->next = newNode; 
+		queue_back = newNode;
+	}
+	queue_size+=1;
 }
 template <class T>
 T queue<T>::front()
 {
-	return front->data; 
+	return queue_front->data; 
 }
 template <class T>
 int queue<T>::size()
 {
-	return size; 
+	return queue_size; 
 }
 template <class T>
 bool queue<T>::empty()
 {
-	return (front==NULL && back==NULL); 
+	return (queue_front==NULL && queue_back==NULL); 
 }
 

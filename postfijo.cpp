@@ -1,13 +1,16 @@
 #include <iostream>
 #include <fstream>
-#include <stack>
-#include <queue>
+//#include <stack>
+//#include <queue>
 #include <cstdlib>
 
 
 using namespace std; 
+#include "Node.h"
+#include "filaEncadenada.h"
+#include "pilaDoblementeEncadenadaCircular.h"
 
-bool debug = false;
+bool debug = true;
 
 const char arithmeticOperators[5] = {'+','-','*','/','%'};
 const char relationalOperators[3] = {'<','>','='};
@@ -195,6 +198,7 @@ queue<char> infix_to_prefix(string exp)
 
 bool evaluate_postfix(queue<char> postfix, int &solution)
 {
+	bool booleanSolution;
 	stack<int> operandStack;
 	string temp = "";
 	char c;
@@ -255,7 +259,7 @@ bool evaluate_postfix(queue<char> postfix, int &solution)
 			case '|':
 				x = operandStack.top(); operandStack.pop();
 				y = operandStack.top(); operandStack.pop();
-				operandStack.push(y&&x);
+				operandStack.push(y||x);
 				break;
 			default:
 				x = atoi(temp.c_str());
@@ -265,12 +269,14 @@ bool evaluate_postfix(queue<char> postfix, int &solution)
 		}
 	}
 	solution = operandStack.top();	
-	return true;
+	booleanSolution = solution;
+	return booleanSolution;
 }//End of evaluate_postfix
 
 int main()
 {
 	int answer; 
+	bool booleanAnswer;
 	string inputFileName, expression;
 	queue<char> my_postfix, my_prefix;
 
@@ -285,10 +291,13 @@ int main()
 		getline(inputFile,expression);
 		if(expression.c_str()[0]!=NULL)
 		{
+			cout<<"======Esta es la expresion en infix======"<<endl;
+			cout<<expression<<endl;
 			my_postfix = infix_to_postfix(expression);
 			my_prefix = infix_to_prefix(expression);
 			cout<<"Esta es la expresión convertida a postfix: "<<endl;
-			evaluate_postfix(my_postfix,answer);
+
+			booleanAnswer = evaluate_postfix(my_postfix,answer);
 			while(my_postfix.size()>0)
 			{
 				cout<<my_postfix.front()<<' ';
@@ -296,6 +305,7 @@ int main()
 			}
 			cout<<endl;
 			cout<<"Este es el resultado: "<<answer<<endl;
+			cout<<"Este es el boolean: "<<booleanAnswer<<endl;
 
 			cout<<"Esta es la expresión convertida a prefix: "<<endl;
 			while(my_prefix.size()>0)
