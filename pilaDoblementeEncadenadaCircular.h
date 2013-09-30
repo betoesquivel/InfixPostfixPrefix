@@ -35,20 +35,20 @@ void stack<T>::push(T param)
 
 	if(stack_size==0)
 	{
+		newNode->previous = newNode;
+		newNode->next = newNode;
 		stack_top = newNode;
-		stack_top->previous = newNode;
-		stack_top->next = newNode;
 		if(debug_pila) cout<<"Size is 0. New node pointing to itself."<<endl;		
 	}else
 	{
-		Node<T> *aux = stack_top;	
+		newNode->previous = stack_top;
+
+		
+		newNode->next = stack_top->next;
+		(stack_top->next)->previous = newNode;
+		stack_top->next = newNode;
+
 		stack_top = newNode;
-		stack_top->previous = aux;
-		
-		stack_top->next = aux->next;
-		(aux->next)->previous = stack_top;
-		
-		aux->next = stack_top;
 	}
 	stack_size+=1;
 }
