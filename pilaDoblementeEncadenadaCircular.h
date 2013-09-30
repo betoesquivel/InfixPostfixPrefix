@@ -1,4 +1,4 @@
-bool debug_pila = true;
+bool debug_pila = false;
 
 template <class T>
 class stack
@@ -13,20 +13,21 @@ class stack
 		T top() { return stack_top->data; }
 		int size(){ return stack_size; }
 		bool empty(){ return (stack_top==NULL); }
+		
 		~stack() 
 		{ 
-			Node<T> *eraser;
-			while(stack_size>0)
+			Node<T> *eraser = stack_top;
+			while(stack_top!=NULL)
 			{
-				eraser = stack_top;
 				stack_top = stack_top->next;
-
 				delete eraser;
+
+				eraser = stack_top;
 
 				stack_size--;
 			}
-			stack_top = NULL;
 		}
+		
 };
 template <class T>
 void stack<T>::push(T param)
@@ -41,13 +42,12 @@ void stack<T>::push(T param)
 		if(debug_pila) cout<<"Size is 0. New node pointing to itself."<<endl;		
 	}else
 	{
-		newNode->previous = stack_top;
-
+		newNode->next = stack_top;
 		
-		newNode->next = stack_top->next;
-		(newNode->next)->previous = newNode;
+		newNode->previous = stack_top->previous;
+		(newNode->previous)->next = newNode;
 
-		stack_top->next = newNode;
+		stack_top->previous = newNode;
 		stack_top = newNode;
 	}
 	stack_size+=1;
@@ -64,7 +64,7 @@ void stack<T>::pop()
 		stack_top = stack_top->next;	
 		delete eraser;
 	}
-		stack_size-=1;
-		if(stack_size == 0) stack_top = NULL;
+	stack_size-=1;
+	if(stack_size == 0) stack_top = NULL;
 }
 

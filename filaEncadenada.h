@@ -9,19 +9,23 @@ class queue
 		queue() { queue_front = NULL; queue_back = NULL; queue_size = 0; }
 		void pop();
 		void push(T param);
-		T front();
-		int size();
-		bool empty();
+		T front() { return queue_front->data; }
+		int size(){ return queue_size; }
+		bool empty(){ return (queue_front==NULL && queue_back==NULL || queue_size==0); }
+ 
+		
 		~queue()
 		{
 			Node<T> *aux = queue_front;
-			while(aux != NULL)
+			while(queue_front!=NULL)
 			{
-				queue_front = aux->next;
+				queue_front = queue_front->next;
 				delete aux;
-				aux = queue_front;	
+				aux = queue_front;
 			}
+
 		}
+		
 };
 template <class T>
 void queue<T>::pop()
@@ -59,6 +63,6 @@ int queue<T>::size()
 template <class T>
 bool queue<T>::empty()
 {
-	return (queue_front==NULL && queue_back==NULL); 
+	return (queue_front==NULL && queue_back==NULL || queue_size==0); 
 }
 

@@ -1,16 +1,16 @@
 #include <iostream>
 #include <fstream>
-//#include <stack>
-//#include <queue>
+#include <stack>
+#include <queue>
 #include <cstdlib>
 
 
 using namespace std; 
 #include "Node.h"
-#include "filaEncadenada.h"
-#include "pilaDoblementeEncadenadaCircular.h"
+//#include "filaEncadenada.h"
+//#include "pilaDoblementeEncadenadaCircular.h"
 
-bool debug = true;
+bool debug = false;
 
 const char arithmeticOperators[5] = {'+','-','*','/','%'};
 const char relationalOperators[3] = {'<','>','='};
@@ -104,7 +104,7 @@ queue<char> infix_to_postfix(string exp)
 		postfixStack.pop();
 	}
 	if(debug) cout<<"DEBUG::Postfix conversion finished, "<<endl;
-	return postfixQueue; 
+	return postfixQueue;
 }
 
 queue<char> infix_to_prefix(string exp)
@@ -293,12 +293,13 @@ int main()
 		{
 			cout<<"======Esta es la expresion en infix======"<<endl;
 			cout<<expression<<endl;
+
 			my_postfix = infix_to_postfix(expression);
 			my_prefix = infix_to_prefix(expression);
-			cout<<"Esta es la expresión convertida a postfix: "<<endl;
 
 			booleanAnswer = evaluate_postfix(my_postfix,answer);
-			while(my_postfix.size()>0)
+			cout<<"Esta es la expresión convertida a postfix: "<<endl;
+			while(!my_postfix.empty())
 			{
 				cout<<my_postfix.front()<<' ';
 				my_postfix.pop();
