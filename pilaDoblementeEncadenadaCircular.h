@@ -45,9 +45,9 @@ void stack<T>::push(T param)
 
 		
 		newNode->next = stack_top->next;
-		(stack_top->next)->previous = newNode;
-		stack_top->next = newNode;
+		(newNode->next)->previous = newNode;
 
+		stack_top->next = newNode;
 		stack_top = newNode;
 	}
 	stack_size+=1;
