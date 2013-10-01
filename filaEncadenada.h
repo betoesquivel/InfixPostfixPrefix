@@ -50,19 +50,3 @@ void queue<T>::push(T param)
 	}
 	queue_size+=1;
 }
-template <class T>
-T queue<T>::front()
-{
-	return queue_front->data; 
-}
-template <class T>
-int queue<T>::size()
-{
-	return queue_size; 
-}
-template <class T>
-bool queue<T>::empty()
-{
-	return (queue_front==NULL && queue_back==NULL || queue_size==0); 
-}
-

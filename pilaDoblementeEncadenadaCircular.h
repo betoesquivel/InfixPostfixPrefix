@@ -54,7 +54,7 @@ void stack<T>::pop()
 		if(debug_pila) cout<<"Stack size is 0. Popping nothing."<<endl;		
 	}else
 	{
-		(stack_top->next)->previous = stacktop->previous;
+		(stack_top->next)->previous = stack_top->previous;
 		Node<T> *eraser = stack_top;
 		stack_top = stack_top->next;	
 		delete eraser;

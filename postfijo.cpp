@@ -1,16 +1,43 @@
 #include <iostream>
 #include <fstream>
-#include <stack>
-#include <queue>
+//#include <stack>
+//#include <queue>
 #include <cstdlib>
 
 
 using namespace std; 
 #include "Node.h"
-//#include "filaEncadenada.h"
-//#include "pilaDoblementeEncadenadaCircular.h"
+#include "filaEncadenada.h"
+#include "pilaDoblementeEncadenadaCircular.h"
 
 bool debug = false;
+queue<char> postfixQueue;
+queue<char> prefixQueue;
+queue<char> recycleBin;
+
+void clear_recycleBin()
+{
+	while(!recycleBin.empty())
+	{
+		recycleBin.pop();
+	}
+}
+void recover_postfixQueue()
+{
+	while(!recycleBin.empty())
+	{
+		postfixQueue.push(recycleBin.front());
+		recycleBin.pop();
+	}
+}
+void recover_prefixQueue()
+{
+	while(!recycleBin.empty())
+	{
+		prefixQueue.push(recycleBin.front());
+		recycleBin.pop();
+	}
+}
 
 int get_precedence(char op)
 {
@@ -34,10 +61,9 @@ bool is_number(char x)
 		x=='5'||x=='6'||x=='7'||x=='8'||x=='9');
 }
 
-queue<char> infix_to_postfix(string exp)
+void infix_to_postfix(string exp)
 {
 	stack<char> postfixStack;
-	queue<char> postfixQueue;
 	int size = exp.length(), operatorPrecedence = 0, nextOperatorInStackPrecedence = 0, opIndex;
 	char c;
 	for(int i = 0; i<size; i++)
@@ -100,14 +126,12 @@ queue<char> infix_to_postfix(string exp)
 		postfixStack.pop();
 	}
 	if(debug) cout<<"DEBUG::Postfix conversion finished, "<<endl;
-	return postfixQueue;
 }
 
-queue<char> infix_to_prefix(string exp)
+void infix_to_prefix(string exp)
 {
 	stack<char> prefixOperatorStack;
 	stack<char> prefixPreStack;
-	queue<char> prefixQueue;
 	int size = exp.length(), operatorPrecedence = 0, nextOperatorInStackPrecedence = 0, opIndex;
 	char c;
 	for(int i = (size-1); i>=0; i--)
@@ -189,21 +213,21 @@ queue<char> infix_to_prefix(string exp)
 		prefixPreStack.pop();
 	}
 	if(debug) cout<<"DEBUG::Prefix conversion finished, "<<endl;
-	return prefixQueue; 
 }	
 
-bool evaluate_postfix(queue<char> postfix, int &solution)
+bool evaluate_postfix(int &solution)
 {
-	bool booleanSolution;
+	bool is_boolean = false;
 	stack<int> operandStack;
 	string temp = "";
 	char c;
 	int x, y;
-	while(!postfix.empty())
+	while(!postfixQueue.empty())
 	{
 		temp = "";
-		temp+=postfix.front();
-		postfix.pop();
+		temp+=postfixQueue.front();
+		recycleBin.push(postfixQueue.front());
+		postfixQueue.pop();
 		c = temp.c_str()[0];
 		switch(c)
 		{
@@ -236,45 +260,48 @@ bool evaluate_postfix(queue<char> postfix, int &solution)
 				x = operandStack.top(); operandStack.pop();
 				y = operandStack.top(); operandStack.pop();
 				operandStack.push(y<x);
+				is_boolean=true;
 				break;
 			case '>':
 				x = operandStack.top(); operandStack.pop();
 				y = operandStack.top(); operandStack.pop();
 				operandStack.push(y>x);
+				is_boolean=true;
 				break;
 			case '=':
 				x = operandStack.top(); operandStack.pop();
 				y = operandStack.top(); operandStack.pop();
 				operandStack.push(y==x);
+				is_boolean=true;
 				break;
 			case '&':
 				x = operandStack.top(); operandStack.pop();
 				y = operandStack.top(); operandStack.pop();
 				operandStack.push(y&&x);
+				is_boolean=true;
 				break;
 			case '|':
 				x = operandStack.top(); operandStack.pop();
 				y = operandStack.top(); operandStack.pop();
 				operandStack.push(y||x);
+				is_boolean=true;
 				break;
 			default:
 				x = atoi(temp.c_str());
-				if (debug) cout<<"DEBUG::This is the variable to push."<<endl;
+				if (debug) cout<<"DEBUG::This is the variable to push: "<<x<<endl;
 				operandStack.push(x);	
 				break;
 		}
 	}
 	solution = operandStack.top();	
-	booleanSolution = solution;
-	return booleanSolution;
+	return is_boolean;
 }//End of evaluate_postfix
 
 int main()
 {
 	int answer; 
-	bool booleanAnswer;
+	bool is_boolean;
 	string inputFileName, expression;
-	queue<char> my_postfix, my_prefix;
 
 	cout<<"Enter the name of the file where expressions are stored: (with .txt)"<<endl;
 	cin>>inputFileName;
@@ -290,25 +317,28 @@ int main()
 			cout<<"======Esta es la expresion en infix======"<<endl;
 			cout<<expression<<endl;
 
-			my_postfix = infix_to_postfix(expression);
-			my_prefix = infix_to_prefix(expression);
+			infix_to_postfix(expression);
+			infix_to_prefix(expression);
 
-			booleanAnswer = evaluate_postfix(my_postfix,answer);
+			is_boolean = evaluate_postfix(answer);
+			recover_postfixQueue();
 			cout<<"Esta es la expresión convertida a postfix: "<<endl;
-			while(!my_postfix.empty())
+			while(!postfixQueue.empty())
 			{
-				cout<<my_postfix.front()<<' ';
-				my_postfix.pop();
+				cout<<postfixQueue.front()<<' ';
+				recycleBin.push(postfixQueue.front());
+				postfixQueue.pop();
 			}
 			cout<<endl;
 			cout<<"Este es el resultado: "<<answer<<endl;
-			cout<<"Este es el boolean: "<<booleanAnswer<<endl;
+			cout<<"Es boolean? "<<is_boolean<<endl;
 
 			cout<<"Esta es la expresión convertida a prefix: "<<endl;
-			while(my_prefix.size()>0)
+			while(prefixQueue.size()>0)
 			{
-				cout<<my_prefix.front()<<' ';
-				my_prefix.pop();
+				cout<<prefixQueue.front()<<' ';
+				recycleBin.push(prefixQueue.front());
+				prefixQueue.pop();
 			}
 			cout<<endl;
 			cout<<endl;
@@ -316,6 +346,7 @@ int main()
 		{
 			if (debug) cout<<"DEBUG::The file had a blank line."<<endl;
 		}
+		clear_recycleBin();
 	}
 	inputFile.close();
 }
