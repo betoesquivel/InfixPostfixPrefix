@@ -16,15 +16,9 @@ class stack
 		
 		~stack() 
 		{ 
-			Node<T> *eraser = stack_top;
-			while(stack_top!=NULL)
+			while(stack_size>0)
 			{
-				stack_top = stack_top->next;
-				delete eraser;
-
-				eraser = stack_top;
-
-				stack_size--;
+				pop();
 			}
 		}
 		
@@ -60,6 +54,7 @@ void stack<T>::pop()
 		if(debug_pila) cout<<"Stack size is 0. Popping nothing."<<endl;		
 	}else
 	{
+		(stack_top->next)->previous = stacktop->previous;
 		Node<T> *eraser = stack_top;
 		stack_top = stack_top->next;	
 		delete eraser;

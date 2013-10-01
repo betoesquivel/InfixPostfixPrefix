@@ -12,10 +12,6 @@ using namespace std;
 
 bool debug = false;
 
-const char arithmeticOperators[5] = {'+','-','*','/','%'};
-const char relationalOperators[3] = {'<','>','='};
-const char logicalOperators[2] = {'&','|'};
-
 int get_precedence(char op)
 {
 	char operators[10] = {'+','-','*','/','%','<','>','=','&','|'};
