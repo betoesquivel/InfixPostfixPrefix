@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
-//#include <stack>
-//#include <queue>
+#include <stack>
+#include <queue>
 #include <cstdlib>
 
 
@@ -14,8 +14,8 @@ using namespace std;
 //#include "FerrufinoQueue.h"
 //#include "FerrufinoStack.h"
 //My friend Hugo's implementation
-#include "HugoQueue.h"
-#include "HugoStack.h"
+//#include "HugoQueue.h"
+//#include "HugoStack.h"
 
 bool debug = false;
 queue<char> postfixQueue;
@@ -111,8 +111,11 @@ void infix_to_postfix(string exp)
 						postfixStack.push(c);
 					else
 					{
+						if(debug) cout<<"DEBUG:: Found operator "<<c<<endl;
 						operatorPrecedence = get_precedence(c);
-						nextOperatorInStackPrecedence = get_precedence(postfixStack.top());
+						if(debug) cout<<"DEBUG:: Checked precedence of operator "<<c<<endl;
+						if(!postfixStack.empty())
+							nextOperatorInStackPrecedence = get_precedence(postfixStack.top());
 						while(!postfixStack.empty() && c!='(' && operatorPrecedence<=nextOperatorInStackPrecedence)
 						{
 							postfixQueue.push(postfixStack.top());
@@ -175,7 +178,7 @@ void infix_to_prefix(string exp)
 				else
 				{
 					if(debug) cout<<"DEBUG:: found an operator. Checking size."<<endl;
-					if(!prefixOperatorStack.empty())
+					if(prefixOperatorStack.empty())
 					{
 						prefixOperatorStack.push(c);
 						if(debug) cout<<"DEBUG:: Size is 0, pushing "<<c<<" to operator stack."<<endl;
@@ -296,6 +299,7 @@ bool evaluate_postfix(int &solution)
 		}
 	}
 	solution = operandStack.top();	
+	if (debug) cout<<"DEBUG::This is the value of is_boolean: "<<is_boolean<<endl;
 	return is_boolean;
 }//End of evaluate_postfix
 
@@ -310,40 +314,52 @@ int main()
 	cin.ignore();
 
 	ifstream inputFile;
+	ofstream outputFile;
+	outputFile.open("RESULTADO.TXT");
 	inputFile.open(inputFileName.c_str());
 	while(!inputFile.eof())
 	{
 		getline(inputFile,expression);
 		if(expression.c_str()[0]!=NULL)
 		{
-			cout<<"======Esta es la expresion en infix======"<<endl;
-			cout<<expression<<endl;
+			outputFile<<"Infijo Original: "<<expression<<endl;
 
 			infix_to_postfix(expression);
 			infix_to_prefix(expression);
 
 			is_boolean = evaluate_postfix(answer);
 			recover_postfixQueue();
-			cout<<"Esta es la expresión convertida a postfix: "<<endl;
+
+			outputFile<<"Postfijo: ";	
 			while(!postfixQueue.empty())
 			{
-				cout<<postfixQueue.front()<<' ';
+				outputFile<<postfixQueue.front();
 				recycleBin.push(postfixQueue.front());
 				postfixQueue.pop();
 			}
-			cout<<endl;
-			cout<<"Este es el resultado: "<<answer<<endl;
-			cout<<"Es boolean? "<<is_boolean<<endl;
+			outputFile<<endl;
 
-			cout<<"Esta es la expresión convertida a prefix: "<<endl;
+			outputFile<<"Prefijo: ";
 			while(!prefixQueue.empty())
 			{
-				cout<<prefixQueue.front()<<' ';
+				outputFile<<prefixQueue.front();
 				recycleBin.push(prefixQueue.front());
 				prefixQueue.pop();
 			}
-			cout<<endl;
-			cout<<endl;
+			outputFile<<endl;
+			outputFile<<"Resultado: ";
+
+			if(is_boolean)
+			{
+				string boolOutput = (answer==1)? "TRUE":"FALSE";
+				outputFile<<boolOutput;
+			}else
+			{
+				outputFile<< answer;
+
+			}
+			outputFile<<endl;
+			outputFile<<endl;
 		}else
 		{
 			if (debug) cout<<"DEBUG::The file had a blank line."<<endl;
@@ -351,4 +367,5 @@ int main()
 		clear_recycleBin();
 	}
 	inputFile.close();
+	outputFile.close();
 }
