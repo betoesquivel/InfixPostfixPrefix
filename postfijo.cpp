@@ -6,9 +6,16 @@
 
 
 using namespace std; 
-#include "Node.h"
-#include "filaEncadenada.h"
-#include "pilaDoblementeEncadenadaCircular.h"
+//My implementation
+//#include "Node.h"
+//#include "filaEncadenada.h"
+//#include "pilaDoblementeEncadenadaCircular.h"
+//My friend Ferrufino's implementation
+//#include "FerrufinoQueue.h"
+//#include "FerrufinoStack.h"
+//My friend Hugo's implementation
+#include "HugoQueue.h"
+#include "HugoStack.h"
 
 bool debug = false;
 queue<char> postfixQueue;
@@ -78,7 +85,7 @@ void infix_to_postfix(string exp)
 					cout<<"DEBUG:: Found (, pushed to stack... "<<postfixStack.top()<<endl;
 				break;
 			case ')': 
-				  while(postfixStack.size()>0 && postfixStack.top()!='(')
+				  while(!postfixStack.empty() && postfixStack.top()!='(')
 				  {
 					if(debug)
 						cout<<"DEBUG:: Concatenating: "<<postfixStack.top()<<endl;
@@ -100,17 +107,17 @@ void infix_to_postfix(string exp)
 				}
 				else
 				{
-					if(postfixStack.size()==0)
+					if(!postfixStack.empty())
 						postfixStack.push(c);
 					else
 					{
 						operatorPrecedence = get_precedence(c);
 						nextOperatorInStackPrecedence = get_precedence(postfixStack.top());
-						while(postfixStack.size()>0 && c!='(' && operatorPrecedence<=nextOperatorInStackPrecedence)
+						while(!postfixStack.empty() && c!='(' && operatorPrecedence<=nextOperatorInStackPrecedence)
 						{
 							postfixQueue.push(postfixStack.top());
 							postfixStack.pop();
-							nextOperatorInStackPrecedence = (postfixStack.size()>0) ? get_precedence(postfixStack.top()):-1;
+							nextOperatorInStackPrecedence = (!postfixStack.empty()) ? get_precedence(postfixStack.top()):-1;
 							if(debug) cout<<"DEBUG:: Precedence of operator is "<<nextOperatorInStackPrecedence<<endl;
 						}
 						postfixStack.push(c);
@@ -120,7 +127,7 @@ void infix_to_postfix(string exp)
 				
 		}//End of switch block...
 	}//End of for loop
-	while(postfixStack.size()>0)
+	while(!postfixStack.empty())
 	{
 		postfixQueue.push(postfixStack.top());
 		postfixStack.pop();
@@ -136,7 +143,6 @@ void infix_to_prefix(string exp)
 	char c;
 	for(int i = (size-1); i>=0; i--)
 	{
-		if(debug) cout<<"DEBUG::String char evaluated is... "<<i<<endl;
 		c = exp.c_str()[i];	
 		if(debug) cout<<"DEBUG::Evaluating char... "<<c<<endl;
 		switch(c)
@@ -146,7 +152,7 @@ void infix_to_prefix(string exp)
 					cout<<"DEBUG:: Found (, pushed to stack... "<<prefixOperatorStack.top()<<endl;
 				break;
 			case '(': 
-				  while(prefixOperatorStack.size()>0 && prefixOperatorStack.top()!=')')
+				  while(!prefixOperatorStack.empty() && prefixOperatorStack.top()!=')')
 				  {
 					if(debug) cout<<"DEBUG:: Concatenating: "<<prefixOperatorStack.top()<<endl;
 					prefixPreStack.push(prefixOperatorStack.top());
@@ -169,8 +175,7 @@ void infix_to_prefix(string exp)
 				else
 				{
 					if(debug) cout<<"DEBUG:: found an operator. Checking size."<<endl;
-					if(debug) cout<<"PrefixOperatorStack Size is: "<<prefixOperatorStack.size()<<endl;
-					if(prefixOperatorStack.size()==0)
+					if(!prefixOperatorStack.empty())
 					{
 						prefixOperatorStack.push(c);
 						if(debug) cout<<"DEBUG:: Size is 0, pushing "<<c<<" to operator stack."<<endl;
@@ -180,12 +185,12 @@ void infix_to_prefix(string exp)
 						operatorPrecedence = get_precedence(c);
 						nextOperatorInStackPrecedence = get_precedence(prefixOperatorStack.top());
 						if(debug) cout<<"DEBUG:: Stack is not empty, checking precedence of operators."<<endl;
-						while(prefixOperatorStack.size()>0  && operatorPrecedence<=nextOperatorInStackPrecedence)
+						while(!prefixOperatorStack.empty()  && operatorPrecedence<=nextOperatorInStackPrecedence)
 						{
 							prefixPreStack.push(prefixOperatorStack.top());
 							if(debug) cout<<"DEBUG:: Pushing operator in stack "<<prefixOperatorStack.top()<<" to prefix prestack."<<endl;
 							prefixOperatorStack.pop();
-							nextOperatorInStackPrecedence = (prefixOperatorStack.size()>0) ? get_precedence(prefixOperatorStack.top()):-1;
+							nextOperatorInStackPrecedence = (!prefixOperatorStack.empty()) ? get_precedence(prefixOperatorStack.top()):-1;
 						}
 						prefixOperatorStack.push(c);
 					}
@@ -194,10 +199,8 @@ void infix_to_prefix(string exp)
 				
 		}//End of switch block...
 		if(debug) cout<<"DEBUG:: End of switch block for "<<c<<endl;
-		if(debug) cout<<"PrefixOperatorStack Size is: "<<prefixOperatorStack.size()<<endl;
 	}//End of for loop
 	if(debug) cout<<"DEBUG:: End of for loop."<<endl;
-	if(debug) cout<<"PrefixOperatorStack Size is: "<<prefixOperatorStack.size()<<endl;
 	while(!prefixOperatorStack.empty())
 	{
 		prefixPreStack.push(prefixOperatorStack.top());
@@ -205,7 +208,6 @@ void infix_to_prefix(string exp)
 		prefixOperatorStack.pop();
 	}
 	if(debug) cout<<"DEBUG:: End of first while loop."<<endl;
-	if(debug) cout<<"PrefixPreStack Size is: "<<prefixPreStack.size()<<endl;
 	while(!prefixPreStack.empty())
 	{
 		prefixQueue.push(prefixPreStack.top());
@@ -334,7 +336,7 @@ int main()
 			cout<<"Es boolean? "<<is_boolean<<endl;
 
 			cout<<"Esta es la expresión convertida a prefix: "<<endl;
-			while(prefixQueue.size()>0)
+			while(!prefixQueue.empty())
 			{
 				cout<<prefixQueue.front()<<' ';
 				recycleBin.push(prefixQueue.front());
